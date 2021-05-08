@@ -59,7 +59,9 @@ void setup() {
   } 
   else {
     Serial.println("Sensor sidik jari tidak ditemukan :(");
-    while (1) { delay(1); }
+    while (1) { 
+      delay(1);
+    }
   }
   Serial.println("Mnunggu jari yang sesuai...");
 }
@@ -93,11 +95,11 @@ void loop() {
 void keypadEvent(KeypadEvent eKey) {
   switch (keypad.getState()) {
     case PRESSED:
-    if (PRESSED) {
-      digitalWrite(buz,1);
-      delay(20);
-      digitalWrite(buz,0);
-    }
+      if (PRESSED) {
+        digitalWrite(buz,1);
+        delay(20);
+        digitalWrite(buz,0);
+      }
   
     Serial.print("Enter: ");
     Serial.println(eKey);
