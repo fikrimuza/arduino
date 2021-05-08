@@ -1,6 +1,6 @@
-#include<Password.h>
-#include<Keypad.h>
-#include<Servo.h>
+#include <Password.h>
+#include <Keypad.h>
+#include <Servo.h>
 #include <Adafruit_Fingerprint.h> 
 #include <SoftwareSerial.h>
 
@@ -20,10 +20,10 @@ const byte baris = 4;
 const byte kolom = 4;
 
 char keys[baris][kolom] = {
-{'1','2','3','A'},
-{'4','5','6','B'},
-{'7','8','9','C'},
-{'*','0','#','D'}
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
 };
 
 byte barisPin[baris] = {12,11,10,9};
@@ -31,8 +31,7 @@ byte kolomPin[kolom]= {8,7,6,5};
 
 Keypad keypad = Keypad( makeKeymap(keys), barisPin, kolomPin, baris, kolom ); //membuat alamat keypad
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
   delay(200);
   motor.attach(13);
@@ -47,20 +46,18 @@ void setup()
   
   for(int xx=0;xx<3;xx++) {
     digitalWrite(buz,HIGH);  
-digitalWrite(led_p,HIGH);  
-digitalWrite(led_f,HIGH);
+    digitalWrite(led_p,HIGH);  
+    digitalWrite(led_f,HIGH);
     delay(100);
     digitalWrite(buz,0);  digitalWrite(led_p,0);  digitalWrite(led_f,0);
     delay(100);
   }
 
   finger.begin(57600); //datasheet fingerprint 57600 bps
-  if (finger.verifyPassword()) 
-  {
+  if (finger.verifyPassword()) {
     Serial.println("Sensor sidik jari ditemuakan!");
   } 
-  else 
-  {
+  else {
     Serial.println("Sensor sidik jari tidak ditemukan :(");
     while (1) { delay(1); }
   }
@@ -68,8 +65,7 @@ digitalWrite(led_f,HIGH);
 }
 
 bool openstate=0;
-void loop()
-{
+void loop() {
   getFingerprintID();
   delay(50);
   keypad.getKey();
@@ -78,32 +74,26 @@ void loop()
   Serial.println(digitalRead(led_f));
   if(digitalRead(led_p) && digitalRead(led_f)) openstate=1;
   buttonState=digitalRead(tombol);
-  if(!buttonState||openstate)
-    {
-      digitalWrite(led_p,0);
-      digitalWrite(led_f,0);
-      openstate=0;
-      for(i=180;i>=50;i--)
-        {
-          motor.write(i);
-          delay(5);
-        }
-        delay(10000);
-      for(i=50;i<=180;i++)
-        {
-          motor.write(i);
-          delay(5);
-        }
+  if(!buttonState||openstate) {
+    digitalWrite(led_p,0);
+    digitalWrite(led_f,0);
+    openstate=0;
+    for(i=180;i>=50;i--) {
+      motor.write(i);
+      delay(5);
     }
+    delay(10000);
+    for(i=50;i<=180;i++) {
+      motor.write(i);
+      delay(5);
+    }
+  }
 }
 
-void keypadEvent(KeypadEvent eKey)
-{
-  switch (keypad.getState())
-  {
+void keypadEvent(KeypadEvent eKey) {
+  switch (keypad.getState()) {
     case PRESSED:
-    if (PRESSED)
-    {
+    if (PRESSED) {
       digitalWrite(buz,1);
       delay(20);
       digitalWrite(buz,0);
@@ -115,8 +105,7 @@ void keypadEvent(KeypadEvent eKey)
   
     Serial.write(254);
   
-    switch (eKey)
-    {
+    switch (eKey) {
       case'A':
         Login();
         delay(1);
@@ -126,29 +115,26 @@ void keypadEvent(KeypadEvent eKey)
         delay(1);
         break;
     
-      default: password.append(eKey); delay(1);
+      default: 
+        password.append(eKey);
+        delay(1);
     }
   }
 }
 
-void Login()
-{ 
-  if (password.evaluate())
-   {
-  digitalWrite(led_p,1);
+void Login() { 
+  if (password.evaluate()) {
+    digitalWrite(led_p,1);
   }
-
-  else
-   {
+  else {
     Serial.println("Akses Ditolak!");
     digitalWrite(buz,1);
     delay(2000);
     digitalWrite(buz,0);
-   }
+  }
 }
 
-uint8_t getFingerprintID()  //un integral 8 bit
-{
+uint8_t getFingerprintID() { //un integral 8 bit
   uint8_t p = finger.getImage();
   switch (p) {
     case FINGERPRINT_OK:
@@ -197,16 +183,19 @@ uint8_t getFingerprintID()  //un integral 8 bit
   p = finger.fingerFastSearch();
   if (p == FINGERPRINT_OK) {
     Serial.println("Menemukan kecocokan!");
-  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+  } 
+  else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Komunikasi gagal");
     return p;
-  } else if (p == FINGERPRINT_NOTFOUND) {
+  } 
+  else if (p == FINGERPRINT_NOTFOUND) {
     Serial.println("Tidak menemukan kecocokan");
     digitalWrite(buz,1);
     delay(2000);
     digitalWrite(buz,0);
     return p;
-  } else {
+  }
+  else {
     Serial.println("Kegagalan tidak di ketahui");
     return p;
   }   
